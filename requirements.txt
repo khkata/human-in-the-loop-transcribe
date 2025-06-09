@@ -1,0 +1,16 @@
+git+https://github.com/openai/whisper.git
+jiwer
+fugashi[unidic-lite]
+tqdm
+soundfile
+torchaudio
+transformers
+datasets
+scipy
+pandas
+scikit-learn
+neologdn
+mojimoji
+optuna
+pydub
+ipywidgets
