@@ -24,8 +24,8 @@ for split in splits:
     paths[f"{split}_local_audio"]    = os.path.join(TMP_DIR, f"{split}_clips")
     paths[f"{split}_features"]       = os.path.join(PROCESSED_DIR, f"{split}_feats.pt")
 
-# test_human.csv は train/test ループ外で追加
-paths["test_human_csv"] = os.path.join(RAW_DIR, "test", "test_human.csv")
+paths["test_human_csv"]      = os.path.join(RAW_DIR, "test", "test_human.csv")
+paths["test_integrated_csv"] = os.path.join(RAW_DIR, "test", "test_integrated.csv")
 
 # ── モデル関連パス ──
 paths["model_path"]         = os.path.join(MODEL_DIR, "mlp_model.pt")
@@ -57,5 +57,9 @@ TEST_PROCESSED_CSV  = paths["test_processed_csv"]
 TEST_RAW_AUDIO      = paths["test_raw_audio"]
 TEST_LOCAL_AUDIO    = paths["test_local_audio"]
 TEST_FEATURES       = paths["test_features"]
-
 TEST_HUMAN_CSV      = paths["test_human_csv"]
+TEST_INTEGRATED     = paths["test_integrated_csv"]
+
+MODEL_PATH          = paths["model_path"]
+SCALER_PATH         = paths["scaler_path"]
+OPTUNA_PARAMS_PATH  = paths["optuna_params_path"]
