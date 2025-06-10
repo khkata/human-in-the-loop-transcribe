@@ -13,7 +13,6 @@ setup(
     package_dir={"": "src"},
     python_requires=">=3.7",
     install_requires=[
-        "whisper @ git+https://github.com/openai/whisper.git",
         "jiwer",
         "fugashi[unidic-lite]",
         "tqdm",
