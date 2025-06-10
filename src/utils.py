@@ -50,7 +50,6 @@ def ensure_clips(raw_audio, local_audio):
 def preprocessing(raw_csv, processed_csv, raw_audio, local_audio, whisper_model):
     ensure_clips(raw_audio, local_audio)
     df = pd.read_csv(raw_csv)
-    df = df.head(10)
     recs = []
     for row in tqdm(df.itertuples(index=False), total=len(df), desc="Transcribing"):
         path = f"{local_audio}/clips/{row.path}"

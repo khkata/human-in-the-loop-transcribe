@@ -24,7 +24,6 @@ class SpeechTextDataset(Dataset):
         return wav.squeeze(0), row.hyp_sentence
 
 def extract_and_cache(df, local_audio, features):
-    df = df.head(10)
     feat_ext = Wav2Vec2FeatureExtractor.from_pretrained("rinna/japanese-wav2vec2-base")
     wav_enc  = Wav2Vec2Model.from_pretrained("rinna/japanese-wav2vec2-base").to(DEVICE).eval()
     bert_tok = AutoTokenizer.from_pretrained("tohoku-nlp/bert-base-japanese-v3")
