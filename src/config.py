@@ -10,6 +10,7 @@ DATA_DIR        = os.path.join(BASE_DIR, "data")
 RAW_DIR         = os.path.join(DATA_DIR, "raw")
 PROCESSED_DIR   = os.path.join(DATA_DIR, "processed")
 MODEL_DIR       = os.path.join(BASE_DIR, "models")
+OUTPUT_DIR       = os.path.join(BASE_DIR, "outputs")
 TMP_DIR         = "/tmp"
 
 # ── splitごとのパスを一括定義 ──
@@ -34,10 +35,13 @@ paths["optuna_params_path"] = os.path.join(MODEL_DIR, "mlp_best_params.json")
 # ── ディレクトリの一括作成 ──
 # 各パスの親ディレクトリを集めて makedirs
 dirs_to_make = {os.path.dirname(p) for p in paths.values()}
+dirs_to_make.add(OUTPUT_DIR)
 for d in dirs_to_make:
     os.makedirs(d, exist_ok=True)
 
-os.makedirs(os.path.dirname("outputs"), exist_ok=True)
+DEVICE               = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+TARGET_SR            = 16000
+BATCH_SIZE           = 16
 
 # ==== ASR モデル ====
 whisper_model = whisper.load_model("small").to(DEVICE)
