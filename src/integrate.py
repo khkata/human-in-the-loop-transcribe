@@ -12,7 +12,7 @@ from src.config import (
     TEST_HUMAN_CSV, TEST_PROCESSED_CSV, TEST_INTEGRATED_CSV
 )
 
-# 不明文字列除去用パターン
+# [不明]除去用パターン
 UNKNOWN_PATTERN = (
     r"[\[\]「」『』\\\//\(\)\{\}＜＞〈〉【】]*\s*不明\s*"
     r"[\[\]「」『』\\\//\(\)\{\}＜＞〈〉【】]*"

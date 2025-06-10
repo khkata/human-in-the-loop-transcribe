@@ -4,7 +4,9 @@ import argparse
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from src.config import TEST_INTEGRATED_CSV
+from src.config import (
+    TEST_INTEGRATED_CSV, OUTPUT_DIR
+)
 
 def compute_cost_wer(df: pd.DataFrame, rank_col: str, k_values: list[int], human_cost: float):
     costs = []
@@ -80,7 +82,7 @@ if __name__ == '__main__':
                         help='Path to integrated CSV with asr/human columns')
     parser.add_argument('--human_cost', type=float, default=15.0,
                         help='Cost per utterance for human transcription')
-    parser.add_argument('--output_dir', default=None,
+    parser.add_argument('--output_dir', default=OUTPUT_DIR,
                         help='Directory to save the plot (default: same dir as integrated_csv)')
     parser.add_argument('--output_filename', default='cost_wer_curve.png',
                         help='Filename for the saved plot')

@@ -38,9 +38,15 @@ dirs_to_make.add(OUTPUT_DIR)
 for d in dirs_to_make:
     os.makedirs(d, exist_ok=True)
 
-DEVICE               = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-TARGET_SR            = 16000
-BATCH_SIZE           = 16
+SEED             = 42
+DEVICE           = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+BATCH_SIZE       = 64
+MAX_TRIALS       = 50
+PATIENCE_OS      = 5
+PATIENCE_FULL    = 10
+MAX_EPOCHS_OS    = 50
+MAX_EPOCHS_FULL  = 100
+N_SPLITS         = 5
 
 # ==== ASR モデル ====
 whisper_model = whisper.load_model("small").to(DEVICE)
@@ -58,7 +64,7 @@ TEST_RAW_AUDIO      = paths["test_raw_audio"]
 TEST_LOCAL_AUDIO    = paths["test_local_audio"]
 TEST_FEATURES       = paths["test_features"]
 TEST_HUMAN_CSV      = paths["test_human_csv"]
-TEST_INTEGRATED     = paths["test_integrated_csv"]
+TEST_INTEGRATED_CSV = paths["test_integrated_csv"]
 
 MODEL_PATH          = paths["model_path"]
 SCALER_PATH         = paths["scaler_path"]
