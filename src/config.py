@@ -19,7 +19,7 @@ paths = {}
 
 for split in splits:
     paths[f"{split}_raw_csv"]        = os.path.join(RAW_DIR, split, f"{split}.csv")
-    paths[f"{split}_processed_csv"]  = os.path.join(PROCESSED_DIR, split, f"{split}_processed.csv")
+    paths[f"{split}_processed_csv"]  = os.path.join(PROCESSED_DIR, f"{split}_processed.csv")
     paths[f"{split}_raw_audio"]      = os.path.join(RAW_DIR, split, "clips.tar.gz")
     paths[f"{split}_local_audio"]    = os.path.join(TMP_DIR, f"{split}_clips")
     paths[f"{split}_features"]       = os.path.join(PROCESSED_DIR, f"{split}_feats.pt")
