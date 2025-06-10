@@ -1,5 +1,5 @@
 import os
-from google.colab import userdata
+import argparse
 
 from src.config import *
 
@@ -60,4 +60,5 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='LLM-Review-Summary')
     parser.add_argument('--out_dir', default=OUTPUT_DIR)
+    args = parser.parse_args()
     main(args)

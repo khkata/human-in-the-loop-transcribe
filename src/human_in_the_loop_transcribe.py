@@ -17,13 +17,13 @@ from src.extract_feats import SpeechTextDataset, extract_and_cache
 from src.models import MLPRegressor
 
 # 音声をWhisperで分割し、データフレームで返す
-def split_audio_segments(audio_path: str, clips_dir: str, overlap: float = 1.0) -> pd.DataFrame:
-    os.makedirs(clips_dir, exist_ok=True)
+def split_audio_segments(audio_path: str, clips_dir: str, overlap: float = 0) -> pd.DataFrame:
+    clips_path = os.path.join(clips_dir, "clips")
+    os.makedirs(clips_path, exist_ok=True)
 
     print("Whisperで文字起こし中...")
     result = whisper_model.transcribe(audio_path, language="ja", fp16=False, verbose=False)
     segments = result["segments"]
-
     audio_duration = segments[-1]['end'] if segments else 0.0
 
     records = []
@@ -33,9 +33,8 @@ def split_audio_segments(audio_path: str, clips_dir: str, overlap: float = 1.0) 
         text  = seg["text"].strip()
         seg_id = f"{idx:04d}"
         out_path = f"segment_{seg_id}.wav"
-        full_path = f"{clips_dir}/{out_path}"
+        full_path = os.path.join(clips_path, out_path)
 
-        # ffmpegで切り出し（-ss 開始位置, -to 終了位置）
         subprocess.run([
             "ffmpeg", "-y", "-i", audio_path,
             "-ss", str(start), "-to", str(end),
@@ -43,14 +42,15 @@ def split_audio_segments(audio_path: str, clips_dir: str, overlap: float = 1.0) 
         ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         records.append({
-            "full_path"         : full_path,
-            "path"              : out_path,
-            "start"             : start,
-            "end"               : end,
-            "hyp_sentence"      : text,
+            "full_path": full_path,
+            "path": out_path,
+            "start": start,
+            "end": end,
+            "hyp_sentence": text,
         })
 
     return pd.DataFrame(records)
+
 
 def wer_estimation(df, feats, scaler, model):
     print("WER予測中...")
@@ -122,16 +122,17 @@ def collect_user_transcriptions(df, threshold, orig_df, output_dir):
 
         display(widgets.HTML("<hr>"))
 
-    save_btn = widgets.Button(description="完了・保存", button_style="success")
-    out = widgets.Output()
-    def on_save(btn):
-        with out:
-            clear_output()
-            print("CSV と TXTを出力しました。")
-        merge_and_save(orig_df, high_df[['path','user_transcription','delete']], output_dir)
+    #save_btn = widgets.Button(description="完了・保存", button_style="success")
+    #out = widgets.Output()
+    #def on_save(btn):
+        #with out:
+            #clear_output()
+            #print("CSV と TXTを出力しました。")
 
-    save_btn.on_click(on_save)
-    display(save_btn, out)
+    #save_btn.on_click(on_save)
+    #display(save_btn, out)
+    print("\n入力が終わったら次のセルを実行してください。")
+    return high_df
 
 # ASRとユーザー文字起こしをマージし、CSVとTXTを出力
 def merge_and_save(orig_df, user_df, output_dir):

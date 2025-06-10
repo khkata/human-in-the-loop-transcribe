@@ -67,8 +67,7 @@ N_SPLITS         = 5
 # ==== ASR モデル ====
 whisper_model = whisper.load_model("small").to(DEVICE)
 
-
-
-
+# ==== OpenAI API Key ====
 load_dotenv()
-api_key = os.environ.get("OPENAI_API_KEY")
+hf_token = os.environ.get("HF_TOKEN")
+api_key  = os.environ.get("OPENAI_API_KEY")
