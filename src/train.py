@@ -22,6 +22,7 @@ from src.config import (
     DEVICE, BATCH_SIZE, MAX_TRIALS, PATIENCE_OS,
     PATIENCE_FULL, MAX_EPOCHS_OS, MAX_EPOCHS_FULL, N_SPLITS
 )
+from src.models import MLPRegressor
 
 warnings.filterwarnings(
     "ignore",
@@ -36,26 +37,6 @@ def set_seed(seed):
     random.seed(seed)
     if DEVICE.type == "cuda":
         torch.cuda.manual_seed_all(seed)
-
-# ── モデル定義 ──
-class MLPRegressor(nn.Module):
-    def __init__(self, input_dim, hidden_sizes, dropout_prob=0.0):
-        super().__init__()
-        layers = []
-        in_dim = input_dim
-        for h in hidden_sizes:
-            layers += [
-                nn.Linear(in_dim, h),
-                nn.LayerNorm(h),
-                nn.SiLU(inplace=True),
-                nn.Dropout(dropout_prob)
-            ]
-            in_dim = h
-        layers.append(nn.Linear(in_dim, 1))
-        self.net = nn.Sequential(*layers)
-
-    def forward(self, x):
-        return self.net(x).squeeze(-1)
 
 # ── データセット ──
 class WERDataset(Dataset):

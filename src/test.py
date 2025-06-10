@@ -11,27 +11,7 @@ from src.config import (
     TEST_FEATURES, SCALER_PATH, MODEL_PATH, TEST_PROCESSED_CSV,
     DEVICE
 )
-
-# MLPRegressor 定義
-class MLPRegressor(nn.Module):
-    def __init__(self, input_dim, hidden_sizes, dropout_prob=0.0):
-        super().__init__()
-        layers = []
-        in_dim = input_dim
-        for h in hidden_sizes:
-            layers += [
-                nn.Linear(in_dim, h),
-                nn.LayerNorm(h),
-                nn.SiLU(inplace=True),
-                nn.Dropout(dropout_prob)
-            ]
-            in_dim = h
-        layers.append(nn.Linear(in_dim, 1))
-        self.net = nn.Sequential(*layers)
-
-    def forward(self, x):
-        return self.net(x).squeeze(-1)
-
+from src.models import MLPRegressor
 
 def evaluate(test_features: str, scaler_path: str, model_path: str, processed_csv: str):
     # 特徴量ロード

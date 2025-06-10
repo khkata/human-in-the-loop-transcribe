@@ -28,5 +28,6 @@ setup(
         "optuna",
         "pydub",
         "ipywidgets",
+        "python-dotenv",
     ],
 )

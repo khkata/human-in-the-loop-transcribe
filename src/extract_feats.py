@@ -15,7 +15,8 @@ class SpeechTextDataset(Dataset):
     def __init__(self, df, local_audio):
         self.df = df.reset_index(drop=True)
         self.local_audio = local_audio
-    def __len__(self): return len(self.df)
+    def __len__(self): 
+        return len(self.df)
     def __getitem__(self, i):
         row = self.df.iloc[i]
         wav, sr = torchaudio.load(f"{self.local_audio}/clips/{row.path}")
@@ -23,7 +24,7 @@ class SpeechTextDataset(Dataset):
             wav = torchaudio.transforms.Resample(sr, TARGET_SR)(wav)
         return wav.squeeze(0), row.hyp_sentence
 
-def extract_and_cache(df, local_audio, features):
+def extract_and_cache(df, local_audio, features=None):
     feat_ext = Wav2Vec2FeatureExtractor.from_pretrained("rinna/japanese-wav2vec2-base")
     wav_enc  = Wav2Vec2Model.from_pretrained("rinna/japanese-wav2vec2-base").to(DEVICE).eval()
     bert_tok = AutoTokenizer.from_pretrained("tohoku-nlp/bert-base-japanese-v3")
@@ -47,7 +48,8 @@ def extract_and_cache(df, local_audio, features):
         all_feats.append(torch.cat([wav_h, txt_h], dim=-1))
 
     feats = torch.cat(all_feats, dim=0)
-    torch.save({"_feats": feats}, features)
+    if features is not None:
+        torch.save({"_feats": feats}, features)
     return feats
 
 def main():
