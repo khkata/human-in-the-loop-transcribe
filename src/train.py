@@ -178,6 +178,62 @@ def objective(trial):
     model.load_state_dict(best_state)
     return best_val
 
+# ===== 全データ再訓練 =====
+def retrain_full_data():
+    with open(OPTUNA_PARAMS_PATH, 'r', encoding='utf-8') as f:
+        params = json.load(f)
+
+    feats, targets, _ = load_data_and_features()
+    X_all = feats.float().to(DEVICE)
+    y_all = targets
+
+    full_weights = create_weighted_sampler(y_all)
+    full_ds = WERDataset(X_all, y_all, full_weights)
+    sampler = WeightedRandomSampler(full_weights, len(full_weights), replacement=True)
+    loader  = DataLoader(full_ds, batch_size=BATCH_SIZE, sampler=sampler)
+
+    model     = MLPRegressor(feats.shape[1], params['hidden_sizes'], params['dropout']).to(DEVICE)
+    criterion = nn.SmoothL1Loss()
+    optimizer = optim.Adam(model.parameters(), lr=params['lr'], weight_decay=params['weight_decay'])
+    scheduler = CosineAnnealingLR(optimizer, T_max=MAX_EPOCHS_FULL, eta_min=1e-6)
+
+    best_loss = float('inf')
+    patience  = 0
+    for epoch in range(1, MAX_EPOCHS_FULL+1):
+        model.train()
+        losses = []
+        for Xb, yb, *_ in loader:
+            Xb, yb = Xb.to(DEVICE), yb.to(DEVICE)
+            optimizer.zero_grad()
+            preds = model(Xb)
+            loss  = criterion(preds, yb)
+            loss.backward()
+            optimizer.step()
+            losses.append(loss.item())
+        scheduler.step()
+
+        avg_loss = np.mean(losses)
+        if avg_loss < best_loss:
+            best_loss = avg_loss
+            patience  = 0
+            best_state = {k:v.cpu() for k,v in model.state_dict().items()}
+        else:
+            patience += 1
+        if patience >= PATIENCE_FULL:
+            break
+
+    model.load_state_dict(best_state)
+    os.makedirs(MODEL_DIR, exist_ok=True)
+    torch.save({
+        'model_state_dict': model.state_dict(),
+        'input_dim': feats.shape[1],
+        'hidden_sizes': params['hidden_sizes'],
+        'dropout_prob': params['dropout'],
+        'lr': params['lr'],
+        'weight_decay': params['weight_decay']
+    }, MODEL_PATH)
+    print(f"Full-trained model saved to {MODEL_PATH}")
+
 # ── メイン ──
 def main(args):
     set_seed(args.seed)
@@ -191,6 +247,9 @@ def main(args):
     with open(OPTUNA_PARAMS_PATH, 'w', encoding="utf-8") as f:
         json.dump(study.best_params, f, ensure_ascii=False, indent=2)
     print("Best params saved to", OPTUNA_PARAMS_PATH)
+
+    # 全データで再訓練
+    retrain_full_data()
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
