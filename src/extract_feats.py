@@ -50,34 +50,22 @@ def extract_and_cache(df, local_audio, features):
     torch.save({"_feats": feats}, features)
     return feats
 
-def main(args):
+def main():
     # 前処理（文字起こし＋WER 付与）
     df_train = preprocessing(
-        args.train_raw_csv, args.train_processed_csv,
-        args.train_raw_audio, args.train_local_audio,
+        TRAIN_RAW_CSV, TRAIN_PROCESSED_CSV,
+        TRAIN_RAW_AUDIO, TRAIN_LOCAL_AUDIO,
         whisper_model
     )
     df_test = preprocessing(
-        args.test_raw_csv,  args.test_processed_csv,
-        args.test_raw_audio,  args.test_local_audio,
+        TEST_RAW_CSV,  TEST_PROCESSED_CSV,
+        TEST_RAW_AUDIO,  TEST_LOCAL_AUDIO,
         whisper_model
     )
 
     # 特徴量抽出
-    extract_and_cache(df_train, args.train_local_audio, args.train_features)
-    extract_and_cache(df_test,  args.test_local_audio,  args.test_features)
+    extract_and_cache(df_train, TRAIN_RAW_CSV, TRAIN_FEATURES)
+    extract_and_cache(df_test,  TEST_LOCAL_AUDIO,  TEST_FEATURES)
 
 if __name__ == "__main__":
-    p = argparse.ArgumentParser()
-    p.add_argument("--train_raw_csv",       default=TRAIN_RAW_CSV)
-    p.add_argument("--train_processed_csv", default=TRAIN_PROCESSED_CSV)
-    p.add_argument("--train_raw_audio",     default=TRAIN_RAW_AUDIO)
-    p.add_argument("--train_local_audio",   default=TRAIN_LOCAL_AUDIO)
-    p.add_argument("--train_features",      default=TRAIN_FEATURES)
-    p.add_argument("--test_raw_csv",        default=TEST_RAW_CSV)
-    p.add_argument("--test_processed_csv",  default=TEST_PROCESSED_CSV)
-    p.add_argument("--test_raw_audio",      default=TEST_RAW_AUDIO)
-    p.add_argument("--test_local_audio",    default=TEST_LOCAL_AUDIO)
-    p.add_argument("--test_features",       default=TEST_FEATURES)
-    args = p.parse_args()
-    main(args)
+    main()
