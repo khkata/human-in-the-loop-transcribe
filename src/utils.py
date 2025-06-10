@@ -18,7 +18,8 @@ class NormalizeJapanese(AbstractTransform):
         return re.sub(r"\s+", " ", t).strip()
 
 class TokenizeJapanese(AbstractTransform):
-    def __init__(self): self.tagger = Tagger()
+    def __init__(self):
+        self.tagger = Tagger()
     def __call__(self, s):
         if isinstance(s, list):
             return [self._tokenize(x) for x in s]
@@ -49,7 +50,7 @@ def ensure_clips(raw_audio, local_audio):
 def preprocessing(raw_csv, processed_csv, raw_audio, local_audio, whisper_model):
     ensure_clips(raw_audio, local_audio)
     df = pd.read_csv(raw_csv)
-    df.head(10)
+    df = df.head(10)
     recs = []
     for row in tqdm(df.itertuples(index=False), total=len(df), desc="Transcribing"):
         path = f"{local_audio}/clips/{row.path}"
