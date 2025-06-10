@@ -4,38 +4,40 @@ import torch
 import whisper
 
 # ==== 定数 ====
-TRAIN_RAW_CSV        = "/content/drive/MyDrive/Human_in_the_Loop_Transcription/data/raw/train/train.csv"
-TRAIN_PROCESSED_CSV  = "/content/drive/MyDrive/Human_in_the_Loop_Transcription/data/processed/train_processed.csv"
-TRAIN_RAW_AUDIO      = "/content/drive/MyDrive/Human_in_the_Loop_Transcription/data/raw/train/clips.tar.gz"
-TRAIN_LOCAL_AUDIO    = "/tmp/train_clips"
+# ── ベースディレクトリ定義 ──
+BASE_DIR        = "/content/human-in-the-loop-transcribe"
+DATA_DIR        = os.path.join(BASE_DIR, "data")
+RAW_DIR         = os.path.join(DATA_DIR, "raw")
+PROCESSED_DIR   = os.path.join(DATA_DIR, "processed")
+MODEL_DIR       = os.path.join(BASE_DIR, "models")
+TMP_DIR         = "/tmp"
 
-TEST_RAW_CSV         = "/content/drive/MyDrive/Human_in_the_Loop_Transcription/data/raw/test/test.csv"
-TEST_PROCESSED_CSV   = "/content/drive/MyDrive/Human_in_the_Loop_Transcription/data/processed/test_processed.csv"
-TEST_RAW_AUDIO       = "/content/drive/MyDrive/Human_in_the_Loop_Transcription/data/raw/test/clips.tar.gz"
-TEST_LOCAL_AUDIO     = "/tmp/test_clips"
+# ── splitごとのパスを一括定義 ──
+splits = ["train", "test"]
+paths = {}
 
-TRAIN_FEATURES       = "/content/drive/MyDrive/Human_in_the_Loop_Transcription/data/processed/train_feats.pt"
-TEST_FEATURES        = "/content/drive/MyDrive/Human_in_the_Loop_Transcription/data/processed/test_feats.pt"
+for split in splits:
+    paths[f"{split}_raw_csv"]        = os.path.join(RAW_DIR, split, f"{split}.csv")
+    paths[f"{split}_processed_csv"]  = os.path.join(PROCESSED_DIR, split, f"{split}_processed.csv")
+    paths[f"{split}_raw_audio"]      = os.path.join(RAW_DIR, split, "clips.tar.gz")
+    paths[f"{split}_local_audio"]    = os.path.join(TMP_DIR, f"{split}_clips")
+    paths[f"{split}_features"]       = os.path.join(PROCESSED_DIR, f"{split}_feats.pt")
 
-MODEL_DIR            = "/content/drive/MyDrive/Human_in_the_Loop_Transcription/models/"
-MODEL_PATH           = os.path.join(MODEL_DIR, "mlp_model.pt")
-SCALER_PATH          = os.path.join(MODEL_DIR, "mlp_scaler.pt")
-OPTUNA_PARAMS_PATH   = os.path.join(MODEL_DIR, "mlp_best_params.json")
+# test_human.csv は train/test ループ外で追加
+paths["test_human_csv"] = os.path.join(RAW_DIR, "test", "test_human.csv")
 
-TEST_HUMAN_CSV       = "/content/drive/MyDrive/Human_in_the_Loop_Transcription/data/raw/test/test_human.csv"
-TEST_INTEGRATED_CSV  = "/content/drive/MyDrive/Human_in_the_Loop_Transcription/data/processed/test_integrated.csv"
-OUTPUT_DIR           = "/content/drive/MyDrive/Human_in_the_Loop_Transcription/outputs"
+# ── モデル関連パス ──
+paths["model_path"]         = os.path.join(MODEL_DIR, "mlp_model.pt")
+paths["scaler_path"]        = os.path.join(MODEL_DIR, "mlp_scaler.pt")
+paths["optuna_params_path"] = os.path.join(MODEL_DIR, "mlp_best_params.json")
 
-DEVICE               = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-TARGET_SR            = 16000
-BATCH_SIZE           = 16
+# ── ディレクトリの一括作成 ──
+# 各パスの親ディレクトリを集めて makedirs
+dirs_to_make = {os.path.dirname(p) for p in paths.values()}
+for d in dirs_to_make:
+    os.makedirs(d, exist_ok=True)
 
-os.makedirs(os.path.dirname(TRAIN_PROCESSED_CSV), exist_ok=True)
-os.makedirs(os.path.dirname(TRAIN_FEATURES),    exist_ok=True)
-os.makedirs(os.path.dirname(TEST_PROCESSED_CSV), exist_ok=True)
-os.makedirs(os.path.dirname(TEST_FEATURES),     exist_ok=True)
-os.makedirs(MODEL_DIR,                          exist_ok=True)
-os.makedirs(OUTPUT_DIR,                          exist_ok=True)
+os.makedirs(os.path.dirname("outputs"), exist_ok=True)
 
 # ==== ASR モデル ====
 whisper_model = whisper.load_model("small").to(DEVICE)
