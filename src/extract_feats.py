@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import torch
+import torchaudio
 from torch.utils.data import Dataset, DataLoader
 from transformers import (
     Wav2Vec2FeatureExtractor, Wav2Vec2Model,
@@ -64,7 +65,7 @@ def main():
     )
 
     # 特徴量抽出
-    extract_and_cache(df_train, TRAIN_RAW_CSV, TRAIN_FEATURES)
+    extract_and_cache(df_train, TRAIN_LOCAL_AUDIO, TRAIN_FEATURES)
     extract_and_cache(df_test,  TEST_LOCAL_AUDIO,  TEST_FEATURES)
 
 if __name__ == "__main__":

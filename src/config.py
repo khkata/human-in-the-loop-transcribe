@@ -10,7 +10,7 @@ DATA_DIR        = os.path.join(BASE_DIR, "data")
 RAW_DIR         = os.path.join(DATA_DIR, "raw")
 PROCESSED_DIR   = os.path.join(DATA_DIR, "processed")
 MODEL_DIR       = os.path.join(BASE_DIR, "models")
-OUTPUT_DIR       = os.path.join(BASE_DIR, "outputs")
+OUTPUT_DIR      = os.path.join(BASE_DIR, "outputs")
 TMP_DIR         = "/tmp"
 
 # ── splitごとのパスを一括定義 ──
@@ -33,7 +33,6 @@ paths["scaler_path"]        = os.path.join(MODEL_DIR, "mlp_scaler.pt")
 paths["optuna_params_path"] = os.path.join(MODEL_DIR, "mlp_best_params.json")
 
 # ── ディレクトリの一括作成 ──
-# 各パスの親ディレクトリを集めて makedirs
 dirs_to_make = {os.path.dirname(p) for p in paths.values()}
 dirs_to_make.add(OUTPUT_DIR)
 for d in dirs_to_make:
@@ -45,3 +44,18 @@ BATCH_SIZE           = 16
 
 # ==== ASR モデル ====
 whisper_model = whisper.load_model("small").to(DEVICE)
+
+# ==== top-level aliases for easier imports ====
+TRAIN_RAW_CSV       = paths["train_raw_csv"]
+TRAIN_PROCESSED_CSV = paths["train_processed_csv"]
+TRAIN_RAW_AUDIO     = paths["train_raw_audio"]
+TRAIN_LOCAL_AUDIO   = paths["train_local_audio"]
+TRAIN_FEATURES      = paths["train_features"]
+
+TEST_RAW_CSV        = paths["test_raw_csv"]
+TEST_PROCESSED_CSV  = paths["test_processed_csv"]
+TEST_RAW_AUDIO      = paths["test_raw_audio"]
+TEST_LOCAL_AUDIO    = paths["test_local_audio"]
+TEST_FEATURES       = paths["test_features"]
+
+TEST_HUMAN_CSV      = paths["test_human_csv"]
